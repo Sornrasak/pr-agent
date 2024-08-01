@@ -1,8 +1,8 @@
 [config]
 # models
-model="gpt-4-turbo-2024-04-09"
+model="gpt-4o"
 model_turbo="gpt-4o"
-fallback_models=["gpt-4-0125-preview"]
+fallback_models=[]
 # CLI
 git_provider="github"
 publish_output=true
@@ -17,7 +17,7 @@ ai_timeout=120 # 2minutes
 # token limits
 max_description_tokens = 500
 max_commits_tokens = 500
-max_model_tokens = 32000 # Limits the maximum number of tokens that can be used by any model, regardless of the model's default capabilities.
+max_model_tokens = 64000 # Limits the maximum number of tokens that can be used by any model, regardless of the model's default capabilities.
 custom_model_max_tokens=-1 # for models not in the default list
 #
 patch_extra_lines = 1
@@ -30,12 +30,14 @@ large_patch_policy = "clip" # "clip", "skip"
 is_auto_command=false
 # seed
 seed=-1 # set positive value to fix the seed (and ensure temperature=0)
-temperature=0.2
+#seed=42 # set positive value to fix the seed (and ensure temperature=0)
+#temperature=0.2
+temperature=0
 
 [pr_reviewer] # /review #
 # enable/disable features
 require_score_review=false
-require_tests_review=true
+require_tests_review=false
 require_estimate_effort_to_review=true
 require_can_be_split_review=false
 require_security_review=true
@@ -44,16 +46,16 @@ extra_issue_links=false
 require_soc2_ticket=false
 soc2_ticket_prompt="Does the PR description include a link to ticket in a project management system (e.g., Jira, Asana, Trello, etc.) ?"
 # general options
-num_code_suggestions=0
-inline_code_comments = false
+num_code_suggestions=4
+inline_code_comments = true
 ask_and_reflect=false
 #automatic_review=true
-persistent_comment=true
+persistent_comment=false
 extra_instructions = ""
 final_update_message = true
 # review labels
-enable_review_labels_security=true
-enable_review_labels_effort=true
+enable_review_labels_security=false
+enable_review_labels_effort=false
 # specific configurations for incremental review (/review -i)
 require_all_thresholds_for_incremental_review=false
 minimal_commits_for_incremental_review=0

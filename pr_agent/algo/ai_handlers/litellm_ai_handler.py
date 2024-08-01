@@ -3,13 +3,14 @@ import requests
 import boto3
 import litellm
 import openai
-from litellm import acompletion
+from litellm import acompletion, completion
 from tenacity import retry, retry_if_exception_type, stop_after_attempt
 from pr_agent.algo.ai_handlers.base_ai_handler import BaseAiHandler
 from pr_agent.config_loader import get_settings
 from pr_agent.log import get_logger
 
-OPENAI_RETRIES = 5
+# OPENAI_RETRIES = 5
+OPENAI_RETRIES = 0
 
 
 class LiteLLMAIHandler(BaseAiHandler):
@@ -49,11 +50,17 @@ class LiteLLMAIHandler(BaseAiHandler):
         if get_settings().get("OPENAI.API_TYPE", None):
             if get_settings().openai.api_type == "azure":
                 self.azure = True
+                os.environ['LITELLM_LOG'] = 'DEBUG'
+                get_logger().info("===== Using Azure API ======")
+                os.environ["AZURE_API_KEY"] = get_settings().openai.key
                 litellm.azure_key = get_settings().openai.key
         if get_settings().get("OPENAI.API_VERSION", None):
             litellm.api_version = get_settings().openai.api_version
+            os.environ["AZURE_API_VERSION"] = get_settings().openai.api_version
         if get_settings().get("OPENAI.API_BASE", None):
             litellm.api_base = get_settings().openai.api_base
+            self.api_base = get_settings().openai.api_base
+            os.environ["AZURE_API_BASE"] = get_settings().openai.api_base
         if get_settings().get("ANTHROPIC.KEY", None):
             litellm.anthropic_key = get_settings().anthropic.key
         if get_settings().get("COHERE.KEY", None):
@@ -105,7 +112,8 @@ class LiteLLMAIHandler(BaseAiHandler):
             resp, finish_reason = None, None
             deployment_id = self.deployment_id
             if self.azure:
-                model = 'azure/' + model
+                # model = 'azure/' + model
+                model = 'azure/' + deployment_id
             messages = [{"role": "system", "content": system}, {"role": "user", "content": user}]
             if img_path:
                 try:
@@ -128,6 +136,7 @@ class LiteLLMAIHandler(BaseAiHandler):
                 "temperature": temperature,
                 "force_timeout": get_settings().config.ai_timeout,
                 "api_base": self.api_base,
+                "api_key": litellm.azure_key
             }
             seed = get_settings().config.get("seed", -1)
             if temperature > 0 and seed >= 0:
@@ -145,7 +154,8 @@ class LiteLLMAIHandler(BaseAiHandler):
                 get_logger().info(f"\nSystem prompt:\n{system}")
                 get_logger().info(f"\nUser prompt:\n{user}")
 
-            response = await acompletion(**kwargs)
+            # response = await acompletion(**kwargs)
+            response = completion(**kwargs)
         except (openai.APIError, openai.APITimeoutError) as e:
             get_logger().error("Error during OpenAI inference: ", e)
             raise
