@@ -25,6 +25,10 @@ class LiteLLMAIHandler(BaseAiHandler):
         Initializes the OpenAI API key and other settings from a configuration file.
         Raises a ValueError if the OpenAI key is missing.
         """
+        litellm.success_callback = ["langsmith"]
+        os.environ["LANGSMITH_API_KEY"] = get_settings().custom.langsmith_api_key
+        os.environ["LANGSMITH_PROJECT"] = "pragent"
+
         self.azure = False
         self.api_base = None
         self.repetition_penalty = None

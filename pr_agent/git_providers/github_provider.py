@@ -234,6 +234,17 @@ class GithubProvider(GitProvider):
             get_logger().error(f"Rate limit exceeded for GitHub API. Original message: {e}")
             raise RateLimitExceeded("Rate limit exceeded for GitHub API.") from e
 
+    def get_head_files_str(self) -> str:
+        contents = []
+        for df in self.get_diff_files():
+            if not df.__dict__.get('head_file'):
+                continue
+            header = f"## new file full view: '{df.filename}'"
+            file_content = f"""{header}\n\n{df.head_file}"""
+            contents.append(file_content)
+        return "\n\n".join(contents)
+
+
     def publish_description(self, pr_title: str, pr_body: str):
         self.pr.edit(title=pr_title, body=pr_body)
 

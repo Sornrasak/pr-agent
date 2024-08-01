@@ -255,6 +255,9 @@ class GitProvider(ABC):
             return len(self.get_diff_files())
         except Exception as e:
             return -1
+    
+    def get_head_files_str(self):
+        return ""
 
 
 def get_main_pr_language(languages, files) -> str:

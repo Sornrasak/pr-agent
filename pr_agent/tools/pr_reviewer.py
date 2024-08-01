@@ -76,6 +76,7 @@ class PRReviewer:
             "custom_labels": "",
             "enable_custom_labels": get_settings().config.enable_custom_labels,
             "extra_issue_links": get_settings().pr_reviewer.extra_issue_links,
+            "head_files_str": self.git_provider.get_head_files_str(),
         }
 
         self.token_handler = TokenHandler(

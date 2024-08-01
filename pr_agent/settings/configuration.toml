@@ -46,7 +46,7 @@ extra_issue_links=false
 require_soc2_ticket=false
 soc2_ticket_prompt="Does the PR description include a link to ticket in a project management system (e.g., Jira, Asana, Trello, etc.) ?"
 # general options
-num_code_suggestions=4
+num_code_suggestions=10
 inline_code_comments = true
 ask_and_reflect=false
 #automatic_review=true

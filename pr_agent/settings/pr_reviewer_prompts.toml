@@ -47,6 +47,7 @@ Code suggestions guidelines:
 - Avoid making suggestions that have already been implemented in the PR code. For example, if you want to add logs, or change a variable to const, or anything else, make sure it isn't already in the PR code.
 - Don't suggest to add docstring, type hints, or comments.
 - Suggestions should focus on the new code added in the PR diff (lines starting with '+')
+- Make use of the full view for changed files to make sure that there are no logic or syntax errors with respect to the existing code.
 {%- endif %}
 
 {%- if extra_instructions %}
@@ -208,6 +209,15 @@ User answers:
 =====
 {%- endif %}
 
+{%- if head_files_str %}
+
+=====
+The following sections are full views of the changed files in the PR.
+
+{{ head_files_str }}
+
+=====
+{%- endif %}
 
 The PR Diff:
 ======
