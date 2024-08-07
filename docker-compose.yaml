@@ -1,0 +1,4 @@
+services:
+  pragent:
+    image: snapsornc/pragent:latest
+    entrypoint: tail -f /dev/null

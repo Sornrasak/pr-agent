@@ -31,11 +31,23 @@ def get_setting_or_env(key: str, default: Union[str, bool] = None) -> Union[str,
 
 
 async def run_action():
+    try:
+        sec_txt = os.environ.get('SECRET_TOML')
+        if not sec_txt:
+            raise Exception("SECRET_TOML not set")
+        secrets_file_path = '/app/pr_agent/settings/secrets.toml'
+        if not os.path.exists(secrets_file_path):
+            with open(secrets_file_path, 'w') as secrets_file:
+                secrets_file.write(sec_txt)
+    except Exception as e:
+        print(f"err {e = }")
+
     # Get environment variables
     GITHUB_EVENT_NAME = os.environ.get('GITHUB_EVENT_NAME')
     GITHUB_EVENT_PATH = os.environ.get('GITHUB_EVENT_PATH')
     OPENAI_KEY = os.environ.get('OPENAI_KEY') or os.environ.get('OPENAI.KEY')
     OPENAI_ORG = os.environ.get('OPENAI_ORG') or os.environ.get('OPENAI.ORG')
+    # GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN') or get_setting_or_env('GITHUB.USER_TOKEN')
     GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')
     # get_settings().set("CONFIG.PUBLISH_OUTPUT_PROGRESS", False)
 
