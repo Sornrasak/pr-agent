@@ -45,10 +45,27 @@ class LiteLLMAIHandler(BaseAiHandler):
             os.environ["AWS_REGION_NAME"] = get_settings().aws.AWS_REGION_NAME
         if get_settings().get("LITELLM.DROP_PARAMS", None):
             litellm.drop_params = get_settings().litellm.drop_params
+        langsmith_env = (
+            os.getenv("LANGCHAIN_API_KEY")
+            or os.getenv("LANGCHAIN_TRACING_V2") == "true"
+            or os.getenv("LANGSMITH_API_KEY")
+        )
+        enable_callbacks = get_settings().get("LITELLM.ENABLE_CALLBACKS", False)
+        if langsmith_env and not enable_callbacks:
+            get_logger().debug("Enabling LiteLLM callbacks based on LangSmith env")
+            get_settings().set("LITELLM.ENABLE_CALLBACKS", True)
+
         if get_settings().get("LITELLM.SUCCESS_CALLBACK", None):
             litellm.success_callback = get_settings().litellm.success_callback
+        elif langsmith_env:
+            get_logger().debug("LangSmith env detected, enabling LiteLLM success callback")
+            litellm.success_callback = ["langsmith"]
+
         if get_settings().get("LITELLM.FAILURE_CALLBACK", None):
             litellm.failure_callback = get_settings().litellm.failure_callback
+        elif langsmith_env:
+            get_logger().debug("LangSmith env detected, enabling LiteLLM failure callback")
+            litellm.failure_callback = ["langsmith"]
         if get_settings().get("LITELLM.SERVICE_CALLBACK", None):
             litellm.service_callback = get_settings().litellm.service_callback
         if get_settings().get("OPENAI.ORG", None):
